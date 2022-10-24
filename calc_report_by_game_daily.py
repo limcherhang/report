@@ -372,7 +372,7 @@ cursor.execute("SET time_zone = '+00:00';")
 gid_set = get_gid_set(gid_query, cursor)
 
 
-result = []
+result = {}
 for (gid, game_type, game_code,game_name_cn) in gid_set:
     if game_type=='sport':
         print(game_type, game_name_cn)
@@ -384,7 +384,7 @@ for (gid, game_type, game_code,game_name_cn) in gid_set:
     # result = [gid, players, add_player, lose_player, diff_player, add_rate, lose_rate, diff_rate,play_time,playtime_first, playtime_nonfirst, player_first, bets_first, h5_rate]
     if result_income[1] != None:
 
-        result.append({
+        result[f'{gid}'] = {
             "日期":result_income[0], "no":-1, "遊戲id":result_income[1] ,"遊戲名稱":game_name_cn, 
             "碼量":round(result_income[2],2), "吐錢":round(result_income[3],2), "有效投注":round(result_income[5],2), 
             "開房費":round(result_income[11],2), "抽水":round(result_income[10],2), "盈利": round(result_income[6],2), 
@@ -398,14 +398,16 @@ for (gid, game_type, game_code,game_name_cn) in gid_set:
             "首遊碼量":round(result_income[14],2), 
             "手游玩家數":result_players[11], 
             "首游玩家留存時間":round(result_players[9],2), "非首游玩家留存時間":round(result_players[10],2)
-        })
+        }
 
 cursor.close()
 connection.close()
 end = time.time()
 print("time_used : ", (end-start)/60, "min")
 cols = list(result[0].keys())
-df = pd.DataFrame(result, columns=cols)
-df['no'] = df["碼量"].rank(method = 'max', ascending=False)
+df = pd.DataFrame.from_dict(result, orient='index', columns=cols)
+df = df.sort_values(by = ['碼量'], ascending=False)
+df['no'] = range(1,len(df)+1)
+# df['no'] = df["碼量"].rank(method = 'max', ascending=False)
 
 df.to_excel(f'{rep_date[:10]}_report_by_game_{day}_day.xlsx')
