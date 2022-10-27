@@ -43,7 +43,8 @@ if len(time_start) != 19:
     print("date doesn't match format, Please quit this processing and check date format as 'xxxx-xx-xx xx:xx:xx'")
 day = args.report_day
 
-currency = ['ALL', 'CNY', 'THB', 'KRW', 'VND']
+# country = ['ALL', 'CN', 'TH', 'KR', 'VN', 'PH']
+currency = ['ALL', 'CNY', 'THB', 'KRW', 'VND', 'PHP']
 
 cursor = connection.cursor()
 
@@ -63,7 +64,7 @@ def report_by_daily_user(gid : int, game_type : str, currency : str, rep_date : 
         if game_type in ('slot', 'arcade', 'fish'):
             query = f"""
                 SELECT 
-                    SUM(total_bet/fx_rate.rate) AS total_bet, SUM(total_round) AS total_round, 1-SUM(total_bet-total_win)/SUM(total_bet) AS RTP
+                    SUM(total_bet/fx_rate.rate) AS total_bet, SUM(total_round) AS total_round, SUM(total_win/fx_rate.rate)/SUM(total_bet/fx_rate.rate) AS RTP, SUM(total_win/fx_rate.rate) AS total_win
                 FROM
                 cypress.statistic_user_by_game AS stat
                 JOIN MaReport.game_info ON game_info.gid=stat.gid
@@ -71,12 +72,13 @@ def report_by_daily_user(gid : int, game_type : str, currency : str, rep_date : 
                 JOIN cypress.parent_list ON parent_list.id = user_list.parentid
                 JOIN cypress.parent_list AS owner_list ON owner_list.id = user_list.ownerid
                 JOIN cypress.fx_rate ON user_list.currency = fx_rate.short_name
-                WHERE `date` >= '{rep_date}' AND `date` < DATE_ADD('{rep_date}', INTERVAL 1 DAY) AND parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = {gid};
+                WHERE `date` >= '{rep_date}' AND `date` < DATE_ADD('{rep_date}', INTERVAL 1 DAY) AND parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = {gid}
+                AND owner_list.id != 19242;
             """
         elif game_type in ('lotto', 'sport'):
             query = f"""
                 SELECT 
-                    SUM(total_bet/fx_rate.rate) AS total_bet, SUM(total_bet_count) AS total_round, 1-SUM(total_bet-total_win)/SUM(total_bet) AS RTP
+                    SUM(total_bet/fx_rate.rate) AS total_bet, SUM(total_bet_count) AS total_round, SUM(total_win/fx_rate.rate)/SUM(total_bet/fx_rate.rate) AS RTP, SUM(total_win/fx_rate.rate) AS total_win
                 FROM
                 cypress.statistic_user_by_lottogame AS stat
                 JOIN MaReport.game_info ON game_info.gid=stat.gid
@@ -84,12 +86,13 @@ def report_by_daily_user(gid : int, game_type : str, currency : str, rep_date : 
                 JOIN cypress.parent_list ON parent_list.id = user_list.parentid
                 JOIN cypress.parent_list AS owner_list ON owner_list.id = user_list.ownerid
                 JOIN cypress.fx_rate ON user_list.currency = fx_rate.short_name
-                WHERE `date` >= '{rep_date}' AND `date` < DATE_ADD('{rep_date}', INTERVAL 1 DAY) AND parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = {gid};        
+                WHERE `date` >= '{rep_date}' AND `date` < DATE_ADD('{rep_date}', INTERVAL 1 DAY) AND parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = {gid}
+                AND owner_list.id != 19242;        
                 """
         elif game_type == 'table':
             query = f"""
                 SELECT 
-                    SUM(total_bet/fx_rate.rate) AS total_bet, SUM(total_round) AS total_round, 1-SUM(total_win-room_fee-total_rake)/SUM(total_bet) AS RTP
+                    SUM(total_bet/fx_rate.rate) AS total_bet, SUM(total_round) AS total_round, SUM(total_win/fx_rate.rate+total_bet/fx_rate.rate-room_fee/fx_rate.rate-total_rake/fx_rate.rate)/SUM(total_bet/fx_rate.rate) AS RTP, SUM((total_win+total_bet)/fx_rate.rate) AS total_win
                 FROM
                 cypress.statistic_user_by_tablegame AS stat
                 JOIN MaReport.game_info ON game_info.gid=stat.gid
@@ -97,18 +100,19 @@ def report_by_daily_user(gid : int, game_type : str, currency : str, rep_date : 
                 JOIN cypress.parent_list ON parent_list.id = user_list.parentid
                 JOIN cypress.parent_list AS owner_list ON owner_list.id = user_list.ownerid
                 JOIN cypress.fx_rate ON user_list.currency = fx_rate.short_name
-                WHERE `date` >= '{rep_date}' AND `date` < DATE_ADD('{rep_date}', INTERVAL 1 DAY) AND parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = {gid};
+                WHERE `date` >= '{rep_date}' AND `date` < DATE_ADD('{rep_date}', INTERVAL 1 DAY) AND parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = {gid}
+                AND owner_list.id != 19242;
             """
     else:
         if game_type in ('slot', 'arcade', 'fish'):
             if currency == 'VND':
                 query = f"""
                     SELECT 
-                        SUM(total_bet) AS total_bet, SUM(total_round) AS total_round, 1-SUM(total_bet-total_win)/SUM(total_bet)
+                        SUM(total_bet), SUM(total_round), SUM(total_win)/SUM(total_bet), SUM(total_win)
                     FROM
                     (
                         SELECT 
-                            total_bet/fx_rate.rate AS total_bet, total_round, total_win/fx_rate.rate AS total_win
+                            SUM(total_bet/fx_rate.rate) AS total_bet, SUM(total_round) AS total_round, SUM(total_win/fx_rate.rate) AS total_win
                         FROM
                         cypress.statistic_user_by_game AS stat
                         JOIN MaReport.game_info ON game_info.gid=stat.gid
@@ -117,10 +121,11 @@ def report_by_daily_user(gid : int, game_type : str, currency : str, rep_date : 
                         JOIN cypress.parent_list AS owner_list ON owner_list.id = user_list.ownerid
                         JOIN cypress.fx_rate ON user_list.currency = fx_rate.short_name
                         WHERE `date` >= '{rep_date}' AND `date` < DATE_ADD('{rep_date}', INTERVAL 1 DAY) AND 
-                        parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = {gid} AND user_list.currency='{currency}' 
+                        parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = {gid} AND user_list.currency='{currency}'
+                        AND owner_list.id != 19242
                         UNION
                         SELECT 
-                            total_bet/fx_rate.rate AS total_bet, total_round, total_win/fx_rate.rate AS total_win
+                            SUM(total_bet/fx_rate.rate) AS total_bet, SUM(total_round) AS total_round, SUM(total_win/fx_rate.rate) AS total_win
                         FROM
                         cypress.statistic_user_by_game AS stat
                         JOIN MaReport.game_info ON game_info.gid=stat.gid
@@ -130,12 +135,13 @@ def report_by_daily_user(gid : int, game_type : str, currency : str, rep_date : 
                         JOIN cypress.fx_rate ON user_list.currency = fx_rate.short_name
                         WHERE `date` >= '{rep_date}' AND `date` < DATE_ADD('{rep_date}', INTERVAL 1 DAY) AND 
                         parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = {gid} AND user_list.currency='VND(K)'
+                        AND owner_list.id != 19242
                     ) AS tb
                 """
             else:
                 query = f"""
                     SELECT 
-                        SUM(total_bet/fx_rate.rate) AS total_bet, SUM(total_round) AS total_round, 1-SUM(total_bet-total_win)/SUM(total_bet) AS RTP
+                        SUM(total_bet/fx_rate.rate) AS total_bet, SUM(total_round) AS total_round, SUM(total_win)/SUM(total_bet) AS RTP, SUM(total_win/fx_rate.rate) AS total_win
                     FROM
                     cypress.statistic_user_by_game AS stat
                     JOIN MaReport.game_info ON game_info.gid=stat.gid
@@ -145,16 +151,17 @@ def report_by_daily_user(gid : int, game_type : str, currency : str, rep_date : 
                     JOIN cypress.fx_rate ON user_list.currency = fx_rate.short_name
                     WHERE `date` >= '{rep_date}' AND `date` < DATE_ADD('{rep_date}', INTERVAL 1 DAY) AND 
                     parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = {gid} AND user_list.currency='{currency}'
+                    AND owner_list.id != 19242
                 """
         elif game_type in ('lotto', 'sport'):
             if currency == 'VND':
                 query = f"""
                     SELECT 
-                        SUM(total_bet) AS total_bet, SUM(total_round) AS total_round, 1-SUM(total_bet-total_win)/SUM(total_bet)
+                        SUM(total_bet), SUM(total_round), SUM(total_win)/SUM(total_bet), SUM(total_win)
                     FROM
                     (
                         SELECT 
-                            total_bet/fx_rate.rate AS total_bet, total_bet_count AS total_round, total_win/fx_rate.rate AS total_win
+                            SUM(total_bet/fx_rate.rate) AS total_bet, SUM(total_bet_count) AS total_round, SUM(total_win/fx_rate.rate) AS total_win
                         FROM
                         cypress.statistic_user_by_lottogame AS stat
                         JOIN MaReport.game_info ON game_info.gid=stat.gid
@@ -163,10 +170,11 @@ def report_by_daily_user(gid : int, game_type : str, currency : str, rep_date : 
                         JOIN cypress.parent_list AS owner_list ON owner_list.id = user_list.ownerid
                         JOIN cypress.fx_rate ON user_list.currency = fx_rate.short_name
                         WHERE `date` >= '{rep_date}' AND `date` < DATE_ADD('{rep_date}', INTERVAL 1 DAY) AND 
-                        parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = {gid} AND user_list.currency='{currency}' 
+                        parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = {gid} AND user_list.currency='{currency}'
+                        AND owner_list.id != 19242
                         UNION
                         SELECT 
-                            total_bet/fx_rate.rate AS total_bet, total_bet_count AS total_round, total_win/fx_rate.rate AS total_win
+                            SUM(total_bet/fx_rate.rate) AS total_bet, SUM(total_bet_count) AS total_round, SUM(total_win/fx_rate.rate) AS total_win
                         FROM
                         cypress.statistic_user_by_lottogame AS stat
                         JOIN MaReport.game_info ON game_info.gid=stat.gid
@@ -176,12 +184,13 @@ def report_by_daily_user(gid : int, game_type : str, currency : str, rep_date : 
                         JOIN cypress.fx_rate ON user_list.currency = fx_rate.short_name
                         WHERE `date` >= '{rep_date}' AND `date` < DATE_ADD('{rep_date}', INTERVAL 1 DAY) AND 
                         parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = {gid} AND user_list.currency='VND(K)'
-                    ) AS tb
+                        AND owner_list.id != 19242
+                    )AS tb
                     """
             else:
                 query = f"""
                     SELECT 
-                        SUM(total_bet/fx_rate.rate) AS total_bet, SUM(total_bet_count) AS total_round, 1-SUM(total_bet-total_win)/SUM(total_bet) AS RTP
+                        SUM(total_bet/fx_rate.rate) AS total_bet, SUM(total_bet_count) AS total_round, SUM(total_win)/SUM(total_bet) AS RTP, SUM(total_win/fx_rate.rate) AS total_win
                     FROM
                     cypress.statistic_user_by_lottogame AS stat
                     JOIN MaReport.game_info ON game_info.gid=stat.gid
@@ -191,16 +200,17 @@ def report_by_daily_user(gid : int, game_type : str, currency : str, rep_date : 
                     JOIN cypress.fx_rate ON user_list.currency = fx_rate.short_name
                     WHERE `date` >= '{rep_date}' AND `date` < DATE_ADD('{rep_date}', INTERVAL 1 DAY) AND 
                     parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = {gid} AND user_list.currency='{currency}'
+                    AND owner_list.id != 19242
                     """
         elif game_type == 'table':
             if currency == 'VND':
                 query = f"""
                     SELECT 
-                        SUM(total_bet) AS total_bet, SUM(total_round) AS total_round, 1-SUM(total_win)/SUM(total_bet)
+                        SUM(total_bet), SUM(total_round), SUM(total_win-room_fee-total_rake)/SUM(total_bet), SUM(total_win)
                     FROM
                     (
                         SELECT 
-                            total_bet/fx_rate.rate AS total_bet, total_round, (total_win-room_fee-total_rake)/fx_rate.rate AS total_win
+                            SUM(total_bet/fx_rate.rate) AS total_bet, SUM(total_round) AS total_round, total_rake/fx_rate.rate AS total_rake, room_fee/fx_rate.rate AS room_fee, SUM((total_win+total_bet)/fx_rate.rate) AS total_win
                         FROM
                         cypress.statistic_user_by_tablegame AS stat
                         JOIN MaReport.game_info ON game_info.gid=stat.gid
@@ -209,10 +219,11 @@ def report_by_daily_user(gid : int, game_type : str, currency : str, rep_date : 
                         JOIN cypress.parent_list AS owner_list ON owner_list.id = user_list.ownerid
                         JOIN cypress.fx_rate ON user_list.currency = fx_rate.short_name
                         WHERE `date` >= '{rep_date}' AND `date` < DATE_ADD('{rep_date}', INTERVAL 1 DAY) AND 
-                        parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = {gid} AND user_list.currency='{currency}' 
+                        parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = {gid} AND user_list.currency='{currency}'
+                        AND owner_list.id != 19242
                         UNION
                         SELECT 
-                            total_bet/fx_rate.rate AS total_bet, total_round, (total_win-room_fee-total_rake)/fx_rate.rate AS total_win -- ,1-SUM(total_win-room_fee-total_rake)/SUM(total_bet) AS RTP
+                            SUM(total_bet/fx_rate.rate) AS total_bet, SUM(total_round) AS total_round, total_rake/fx_rate.rate AS total_rake, room_fee/fx_rate.rate AS room_fee, SUM((total_win+total_bet)/fx_rate.rate) AS total_win
                         FROM
                         cypress.statistic_user_by_tablegame AS stat
                         JOIN MaReport.game_info ON game_info.gid=stat.gid
@@ -222,12 +233,13 @@ def report_by_daily_user(gid : int, game_type : str, currency : str, rep_date : 
                         JOIN cypress.fx_rate ON user_list.currency = fx_rate.short_name
                         WHERE `date` >= '{rep_date}' AND `date` < DATE_ADD('{rep_date}', INTERVAL 1 DAY) AND 
                         parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = {gid} AND user_list.currency='VND(K)'
-                    ) AS tb
+                        AND owner_list.id != 19242
+                    )AS tb
                 """
             else:
                 query = f"""
                     SELECT 
-                        SUM(total_bet/fx_rate.rate) AS total_bet, SUM(total_round) AS total_round, 1-SUM(total_win-room_fee-total_rake)/SUM(total_bet) AS RTP
+                        SUM(total_bet/fx_rate.rate) AS total_bet, SUM(total_round) AS total_round, SUM(total_win+total_bet-room_fee-total_rake)/SUM(total_bet) AS RTP, SUM((total_win+total_bet)/fx_rate.rate) AS total_win
                     FROM
                     cypress.statistic_user_by_tablegame AS stat
                     JOIN MaReport.game_info ON game_info.gid=stat.gid
@@ -237,6 +249,7 @@ def report_by_daily_user(gid : int, game_type : str, currency : str, rep_date : 
                     JOIN cypress.fx_rate ON user_list.currency = fx_rate.short_name
                     WHERE `date` >= '{rep_date}' AND `date` < DATE_ADD('{rep_date}', INTERVAL 1 DAY) AND 
                     parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = {gid} AND user_list.currency='{currency}'
+                    AND owner_list.id != 19242
                 """
     return query
 
@@ -255,16 +268,28 @@ for idx_x, cur in enumerate(currency):
         for idx, (gid, game_type, game_name_cn) in enumerate(gid_set):
             cursor.execute(report_by_daily_user(gid, game_type, cur, date))
             result = cursor.fetchone()
-            # print(result)
             if result[0] != None:
-                ans[f'{gid}'] = [date[0:10], game_name_cn, round(result[0],2), result[1], round(result[2],2), cur, game_type]
+                try:
+                    ans[f'{gid}'][2] += float(str(result[0]).replace(',', ''))
+                    ans[f'{gid}'][3] += result[1]
+                    ans[f'{gid}'][4] += float(str(result[2]).replace(',',''))
+                    ans[f'{gid}'][5] += float(str(result[3]).replace(',',''))
+                except KeyError:
+                    ans[f'{gid}'] = [date[0:10], game_name_cn, float(str(result[0]).replace(',', '')), result[1], float(str(result[2]).replace(',','')), float(str(result[3]).replace(',','')), cur, game_type]
         print(date, ':', cur, "done")
         date = str(datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')+datetime.timedelta(days=1))
-    cols = ['日期','遊戲名稱','  總押注  ','  總局數  ', '  RTP  ', 'currency', 'game_type']
+    
+    cols = ['日期','遊戲名稱','  總押注  ','  總局數  ', '  RTP  ', '總吐錢', 'currency', 'game_type']
 
     df = pd.DataFrame.from_dict(ans, orient='index', columns=cols)
 
     df = df.sort_values(by = ['  總押注  '], ascending=False)
+
+    df.loc[:, '  總押注  '] = df['  總押注  '].map('{:,.2f}'.format)
+    df.loc[:, '總吐錢'] = df['總吐錢'].map('{:,.2f}'.format)
+    df.loc[:, '  總局數  '] = df['  總局數  '].map('{:,.2f}'.format)
+    df.loc[:, '  RTP  '] = df['  RTP  '].map('{:,.2f}'.format)
+
     df['排名'] = range(1, len(df)+1)
     df = df[['排名']+cols]
     dfs.append(df)
@@ -295,4 +320,4 @@ with pd.ExcelWriter(f"{filename[:10]}_bet_round_rtp_{day}_day.xlsx") as writer:
 cursor.close()
 connection.close()
 e = time()
-print("import complete, time:", e-s, 'sec')
+print(f"{filename[:10]}_bet_round_rtp_{day}_day.xlsx import complete, time:", e-s, 'sec')

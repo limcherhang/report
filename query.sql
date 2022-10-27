@@ -1,7 +1,8 @@
 -- 一日碼量和局數
-SET @date1 = '2022-10-22';
-SELECT * FROM MaReport.game_info;
+SET time_zone ='+00:00';
+SET @date1 = '2022-09-30';
 
+SELECT * FROM cypress.fx_rate;
 SELECT SUM(total_bet/rate), SUM(total_round) FROM cypress.statistic_user_by_game AS stat
 JOIN cypress.user_list ON user_list.id=stat.uid
 JOIN cypress.parent_list ON parent_list.id = user_list.parentid
@@ -28,67 +29,106 @@ SELECT * FROM MaReport.report_by_game_daily
 WHERE `date` >= @date1 AND `date` < DATE_ADD(@date1, INTERVAL 1 DAY) AND currency='All' AND gid = 7;
 
 -- 一日碼量和局數和rtp 				('ALL','CNY','KRW','THB','VND')
-SELECT * FROM cypress.fx_rate WHERE country='VN';
+SET time_zone ='+00:00';
+SET @date1 = '2022-09-29';
+SELECT * FROM cypress.fx_rate;
 
-SELECT `date`, game_name_cn, bets, rounds, FORMAT(1-kill_rate/100,2) AS RTP, currency FROM MaReport.report_by_game_daily AS rep 
+SELECT `date`, game_name_cn, bets, rounds, FORMAT(1-kill_rate/100,2) AS RTP, wins, currency FROM MaReport.report_by_game_daily AS rep 
 JOIN MaReport.game_info ON game_info.gid=rep.gid
-WHERE `date` >= @date1 AND `date` < DATE_ADD(@date1, INTERVAL 1 DAY) AND currency = 'ALL'  ORDER BY bets DESC, currency DESC;
+WHERE `date` >= @date1 AND `date` < DATE_ADD(@date1, INTERVAL 1 DAY) AND currency = 'ALL'  ORDER BY bets DESC, currency DESC LIMIT 500;
 
-SELECT `date`, game_name_cn, bets, rounds, FORMAT(1-kill_rate/100,2) AS RTP, currency FROM MaReport.report_by_game_daily AS rep 
+SELECT `date`, game_name_cn, bets, rounds, FORMAT(1-kill_rate/100,2) AS RTP, wins, currency FROM MaReport.report_by_game_daily AS rep 
 JOIN MaReport.game_info ON game_info.gid=rep.gid
-WHERE `date` >= @date1 AND `date` < DATE_ADD(@date1, INTERVAL 1 DAY) AND currency = 'CNY'  ORDER BY bets DESC, currency DESC;
+WHERE `date` >= @date1 AND `date` < DATE_ADD(@date1, INTERVAL 1 DAY) AND currency = 'CNY'  ORDER BY bets DESC, currency DESC LIMIT 500;
 
-SELECT `date`, game_name_cn, bets, rounds, FORMAT(1-kill_rate/100,2) AS RTP, currency FROM MaReport.report_by_game_daily AS rep 
-JOIN MaReport.game_info ON game_info.gid=rep.gid
-WHERE `date` >= @date1 AND `date` < DATE_ADD(@date1, INTERVAL 1 DAY) AND currency = 'KRW'  ORDER BY bets DESC, currency DESC;
-
-SELECT `date`, game_name_cn, bets, rounds, FORMAT(1-kill_rate/100,2) AS RTP, currency FROM MaReport.report_by_game_daily AS rep 
+SELECT `date`, game_name_cn, bets, rounds, FORMAT(1-kill_rate/100,2) AS RTP, wins, currency FROM MaReport.report_by_game_daily AS rep 
 JOIN MaReport.game_info ON game_info.gid=rep.gid
 WHERE `date` >= @date1 AND `date` < DATE_ADD(@date1, INTERVAL 1 DAY) AND currency = 'THB'  ORDER BY bets DESC, currency DESC;
 
-SELECT `date`, game_name_cn, bets, rounds, FORMAT(1-kill_rate/100,2) AS RTP, currency FROM MaReport.report_by_game_daily AS rep 
+SELECT `date`, game_name_cn, bets, rounds, FORMAT(1-kill_rate/100,2) AS RTP, wins, currency FROM MaReport.report_by_game_daily AS rep 
+JOIN MaReport.game_info ON game_info.gid=rep.gid
+WHERE `date` >= @date1 AND `date` < DATE_ADD(@date1, INTERVAL 1 DAY) AND currency = 'KRW'  ORDER BY bets DESC, currency DESC;
+
+SELECT `date`, game_name_cn, bets, rounds, FORMAT(1-kill_rate/100,2) AS RTP, wins, currency FROM MaReport.report_by_game_daily AS rep 
 JOIN MaReport.game_info ON game_info.gid=rep.gid
 WHERE `date` >= @date1 AND `date` < DATE_ADD(@date1, INTERVAL 1 DAY) AND currency = 'VND'  ORDER BY bets DESC, currency DESC;
 
-SELECT 
-	SUM(total_bet/fx_rate.rate) AS total_bet, SUM(total_round) AS total_round, 1-SUM(total_bet-total_win)/SUM(total_bet) AS RTP
+SELECT `date`, game_name_cn, bets, rounds, FORMAT(1-kill_rate/100,2) AS RTP, wins, currency FROM MaReport.report_by_game_daily AS rep 
+JOIN MaReport.game_info ON game_info.gid=rep.gid
+WHERE `date` >= @date1 AND `date` < DATE_ADD(@date1, INTERVAL 1 DAY) AND currency = 'PHP'  ORDER BY bets DESC, currency DESC;
+
+SELECT
+	SUM(total_bet), SUM(total_round), 1-SUM(total_bet-total_win)/SUM(total_bet)
 FROM
-cypress.statistic_user_by_game AS stat
+(	
+    SELECT 
+		SUM(total_bet/rate) AS total_bet, SUM(total_bet_count) AS total_round, SUM(total_win/rate) AS total_win
+	FROM cypress.statistic_user_by_lottogame AS stat
+    JOIN MaReport.game_info ON game_info.gid=stat.gid
+	JOIN cypress.user_list ON user_list.id = stat.uid
+    JOIN cypress.parent_list ON parent_list.id=user_list.parentid
+    JOIN cypress.parent_list AS owner_list ON owner_list.id = user_list.ownerid
+	JOIN cypress.fx_rate ON fx_rate.short_name=user_list.currency
+	WHERE stat.gid = 869 AND `date`>=@date1 AND `date`<DATE_ADD(@date1, INTERVAL 1 DAY) AND user_list.currency = 'VND(K)' 
+    AND parent_list.istestss = 0 AND owner_list.istestss = 0
+	UNION
+	SELECT 
+		SUM(total_bet/rate) AS total_bet, SUM(total_bet_count) AS total_round, SUM(total_win/rate) AS total_win
+	FROM cypress.statistic_user_by_lottogame AS stat 
+	JOIN MaReport.game_info ON game_info.gid=stat.gid
+    JOIN cypress.user_list ON user_list.id = stat.uid
+    JOIN cypress.parent_list ON parent_list.id=user_list.parentid
+    JOIN cypress.parent_list AS owner_list ON owner_list.id = user_list.ownerid
+	JOIN cypress.fx_rate ON fx_rate.short_name=user_list.currency
+	WHERE stat.gid = 869 AND `date`>=@date1 AND `date`<DATE_ADD(@date1, INTERVAL 1 DAY)-- AND user_list.currency = 'VND'
+    AND parent_list.istestss = 0 AND owner_list.istestss = 0
+) AS tb;
+
+SELECT * FROM MaReport.game_info WHERE game_name_cn='甜蜜蜜';
+SELECT * FROM cypress.fx_rate;
+
+SELECT 
+	COUNT(*)-- owner_list.id AS oid, parent_list.id AS pid,uid, total_bet/rate AS total_bet, total_round AS total_round, total_win/rate AS total_win, user_list.currency
+FROM cypress.statistic_user_by_game AS stat 
 JOIN MaReport.game_info ON game_info.gid=stat.gid
-JOIN cypress.user_list ON stat.uid = user_list.id
-JOIN cypress.parent_list ON parent_list.id = user_list.parentid
+JOIN cypress.user_list ON user_list.id = stat.uid 
+JOIN cypress.parent_list ON parent_list.id=user_list.parentid
 JOIN cypress.parent_list AS owner_list ON owner_list.id = user_list.ownerid
-JOIN cypress.fx_rate ON user_list.currency = fx_rate.short_name
-WHERE `date` >= @date1 AND `date` < DATE_ADD(@date1, INTERVAL 1 DAY) AND parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = 1;
+JOIN cypress.fx_rate ON fx_rate.short_name=user_list.currency
+WHERE -- stat.gid = 8 AND 
+`date`>=@date1 AND `date`<DATE_ADD(@date1, INTERVAL 1 DAY) AND user_list.currency = 'PHP'
+AND parent_list.istestss = 0 AND owner_list.istestss = 0 -- AND total_round <= 22 
+AND parent_list.id = 19242
+LIMIT 5000;
 
 SELECT 
-        SUM(total_bet) AS total_bet, SUM(total_round) AS total_round, 1-SUM(total_bet-total_win)/SUM(total_bet)
-    FROM
-    (
-        SELECT 
-            total_bet/fx_rate.rate AS total_bet, total_round, total_win/fx_rate.rate AS total_win
-        FROM
-        cypress.statistic_user_by_game AS stat
-        JOIN MaReport.game_info ON game_info.gid=stat.gid
-        JOIN cypress.user_list ON stat.uid = user_list.id
-        JOIN cypress.parent_list ON parent_list.id = user_list.parentid
-        JOIN cypress.parent_list AS owner_list ON owner_list.id = user_list.ownerid
-        JOIN cypress.fx_rate ON user_list.currency = fx_rate.short_name
-        WHERE `date` >= '2022-09-30 00:00:00' AND `date` < '2022-10-01 00:00:00' AND 
-        parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = 1 AND user_list.currency='VND' 
-        UNION
-        SELECT 
-            total_bet/fx_rate.rate AS total_bet, total_round, total_win/fx_rate.rate AS total_win
-        FROM
-        cypress.statistic_user_by_game AS stat
-        JOIN MaReport.game_info ON game_info.gid=stat.gid
-        JOIN cypress.user_list ON stat.uid = user_list.id
-        JOIN cypress.parent_list ON parent_list.id = user_list.parentid
-        JOIN cypress.parent_list AS owner_list ON owner_list.id = user_list.ownerid
-        JOIN cypress.fx_rate ON user_list.currency = fx_rate.short_name
-        WHERE `date` >= '2022-09-30 00:00:00' AND `date` < '2022-10-01 00:00:00' AND 
-        parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = 1 AND user_list.currency='VND(K)'
-    ) AS tb;
+	1-SUM(total_bet-total_win)/SUM(total_bet) AS RTP-- owner_list.id AS oid, parent_list.id AS pid,uid, total_bet/rate AS total_bet, total_bet_count AS total_round, total_win/rate AS total_win, user_list.currency
+FROM cypress.statistic_user_by_game AS stat 
+JOIN MaReport.game_info ON game_info.gid=stat.gid
+JOIN cypress.user_list ON user_list.id = stat.uid 
+JOIN cypress.parent_list ON parent_list.id=user_list.parentid
+JOIN cypress.parent_list AS owner_list ON owner_list.id = user_list.ownerid
+JOIN cypress.fx_rate ON fx_rate.short_name=user_list.currency
+WHERE stat.gid = 836 AND `date`>=@date1 AND `date`<DATE_ADD(@date1, INTERVAL 1 DAY) AND user_list.currency = 'VND(K)'
+AND parent_list.istestss = 0 AND owner_list.istestss = 0 
+LIMIT 5000;
+
+
+SELECT 
+	owner_list.id AS oid, parent_list.id AS pid,uid, total_bet/rate AS total_bet, total_round AS total_round, total_win/rate AS total_win, user_list.currency, game_name_cn
+FROM cypress.statistic_user_by_game AS stat 
+JOIN MaReport.game_info ON game_info.gid=stat.gid
+JOIN cypress.user_list ON user_list.id = stat.uid 
+JOIN cypress.parent_list ON parent_list.id=user_list.parentid
+JOIN cypress.parent_list AS owner_list ON owner_list.id = user_list.ownerid
+JOIN cypress.fx_rate ON fx_rate.short_name=user_list.currency
+WHERE `date`>=@date1 AND `date`<DATE_ADD(@date1, INTERVAL 1 DAY) AND user_list.currency = 'PHP'
+AND parent_list.istestss = 0 AND owner_list.istestss = 0 AND owner_list.id=19242
+LIMIT 5000;
+
+SELECT * FROM cypress.user_list WHERE id IN (165476644, 167828858, 173602878, 166105830);
+SELECT * FROM cypress.parent_list WHERE id IN (19242);
+SELECT * FROM cypress.parent_list AS owner_list WHERE id = 166105830;
 
 SELECT 
         SUM(total_bet) AS total_bet, SUM(total_round) AS total_round, 1-SUM(total_bet-total_win)/SUM(total_bet)
@@ -104,7 +144,7 @@ SELECT
         JOIN cypress.parent_list AS owner_list ON owner_list.id = user_list.ownerid
         JOIN cypress.fx_rate ON user_list.currency = fx_rate.short_name
         WHERE `date` >= @date1 AND `date` < DATE_ADD(@date1,INTERVAL 1 DAY) AND 
-        parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = 1 AND user_list.currency='VND' 
+        parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = 225 AND user_list.currency='VND' 
         UNION
         SELECT 
             total_bet/fx_rate.rate AS total_bet, total_round, total_win/fx_rate.rate AS total_win
@@ -116,7 +156,7 @@ SELECT
         JOIN cypress.parent_list AS owner_list ON owner_list.id = user_list.ownerid
         JOIN cypress.fx_rate ON user_list.currency = fx_rate.short_name
         WHERE `date` >= @date1 AND `date` < DATE_ADD(@date1,INTERVAL 1 DAY) AND 
-        parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = 1 AND user_list.currency='VND(K)'
+        parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = 225 AND user_list.currency='VND(K)'
     ) AS tb;
 
 SELECT 
@@ -143,6 +183,11 @@ JOIN cypress.parent_list AS owner_list ON owner_list.id = user_list.ownerid
 JOIN cypress.fx_rate ON user_list.currency = fx_rate.short_name
 WHERE `date` >= @date1 AND `date` < DATE_ADD(@date1,INTERVAL 1 DAY) AND 
 parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = 1 AND user_list.currency='VND(K)';
+
+-- 一個月
+SELECT `date`, game_name_cn, bets, rounds, FORMAT(1-kill_rate/100,2) AS RTP, currency FROM MaReport.report_by_game_monthly AS rep 
+JOIN MaReport.game_info ON game_info.gid=rep.gid
+WHERE `date` >= @date1 AND `date` < DATE_ADD(@date1, INTERVAL 1 DAY) AND currency = 'ALL'  ORDER BY bets DESC, currency DESC;
 
 -- 一小時碼量和局數
 SELECT 
@@ -404,3 +449,5 @@ JOIN cypress.parent_list ON parent_list.id = user_list.parentid
 JOIN cypress.parent_list AS owner_list ON owner_list.id = user_list.ownerid
 JOIN cypress.fx_rate ON user_list.currency = fx_rate.short_name
 WHERE `date` >= @date1 AND `date` < DATE_ADD(@date1, INTERVAL 1 DAY) AND parent_list.istestss = 0 AND owner_list.istestss = 0 AND stat.gid = 11;
+
+SELECT count(*) FROM MaReport.user_gametoken_log WHERE `date`>=@date1 AND `date`<DATE_ADD(@date1, INTERVAL 1 DAY);

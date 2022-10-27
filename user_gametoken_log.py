@@ -22,6 +22,21 @@ if len(rep_date) != 19:
 ###################
 # connect mongodb #
 ###################
+"""
+MongoClient(
+            host=mongo_cfg["host"],
+            port=mongo_cfg["port"],
+            username=mongo_cfg["user"],
+            password=mongo_cfg["password"],
+            authSource=mongo_cfg["authentication_source"],
+            connect=True,
+            serverSelectionTimeoutMS=3000,
+            replicaSet=mongo_cfg["replicaset"],
+            read_preference=pymongo.read_preferences.ReadPreference.SECONDARY_PREFERRED,
+            w=1,
+        )
+"""
+
 username = "DAxHermes_aries"
 passw = "AK4EyH7Nx96_GDwz"
 host = ["10.100.8.87","10.100.8.88","10.100.8.89"]
@@ -43,34 +58,54 @@ collec = db.order
 
 s = time.time()
 cursor = collec.find({
-    "bettime":{"$gte":datetime.datetime.strptime(rep_date, "%Y-%m-%d %H:%M:%S")}, "finaltime":{"$lt":datetime.datetime.strptime(rep_date, "%Y-%m-%d %H:%M:%S")+datetime.timedelta(hours=1)}
+    "bettime":{"$gte":datetime.datetime.strptime(rep_date, "%Y-%m-%d %H:%M:%S")}, "createtime":{"$lt":datetime.datetime.strptime(rep_date, "%Y-%m-%d %H:%M:%S")+datetime.timedelta(hours=1)}
 })
-result_mongo = []
-token = ()
+e = time.time()
+print('query done : ', (e-s)/60, ' min')
 
-for ele in cursor:
-    if ele['gametoken'] in token:
-        for i in range(len(token)):
-            if ele['gametoken'] == token[i]:
-                idx = i
-                break
-        if ele['bettime'].timestamp() < result_mongo[idx]['bettime'].timestamp():
-            ele['bettime'] = result_mongo[idx]['bettime']
-        if ele['finaltime'].timestamp() > result_mongo[idx]['finaltime'].timestamp():
-            ele['finaltime'] = result_mongo[idx]['finaltime']
-    else:
-        token+=(ele['gametoken'],)
-        result_mongo.append({
-            "gametoken":ele['gametoken'],
-            "userid":ele['playerid'],
-            "game_code":ele['gamecode'],
-            "bettime":ele['bettime'],
-            "wintime":ele['finaltime']
-        })
+result_mongo = {}
+# token = ()
+s = time.time()
+for i, ele in enumerate(cursor):
+    print(i)
+    try:
+        print(result_mongo['{}'.format(ele['gametoken'])])
+        if ele['bettime'].timestamp() < result_mongo['{}'.format(ele['gametoken'])]['bettime'].timestamp():
+            result_mongo['{}'.format(ele['gametoken'])]['bettime'] = ele['bettime']
+        if ele['createtime'].timestamp() > result_mongo['{}'.format(ele['gametoken'])]['createtime'].timestamp():
+            result_mongo['{}'.format(ele['gametoken'])]['createtime'] = ele['createtime']
+    except KeyError:
+        result_mongo['{}'.format(ele['gametoken'])] = {
+            'gametoken':ele['gametoken'],
+            'userid':ele['playerid'],
+            'game_code':ele['gamecode'],
+            'bettime':ele['bettime'],
+            'wintime':ele['createtime']
+        }
+    # if ele['gametoken'] in token:
+    #     for i in range(len(token)):
+    #         if ele['gametoken'] == token[i]:
+    #             idx = i
+    #             break
+    #     if ele['bettime'].timestamp() < result_mongo[idx]['bettime'].timestamp():
+    #         ele['bettime'] = result_mongo[idx]['bettime']
+    #     if ele['finaltime'].timestamp() > result_mongo[idx]['finaltime'].timestamp():
+    #         ele['finaltime'] = result_mongo[idx]['finaltime']
+    # else:
+    #     token+=(ele['gametoken'],)
+    #     result_mongo.append({
+    #         "gametoken":ele['gametoken'],
+    #         "userid":ele['playerid'],
+    #         "game_code":ele['gamecode'],
+    #         "bettime":ele['bettime'],
+    #         "wintime":ele['finaltime']
+    #     })
 
 e = time.time()
 print(e-s)
 
-df = pd.DataFrame(result_mongo, columns=result_mongo[0].keys())
+df = pd.DataFrame.from_dict(
+    result_mongo, orient='index', columns=['gametoken', 'userid', 'game_code', 'bettime', 'wintime']
+)
 
 df.to_excel(f"{rep_date[:10]}_user_gametoken_log.xlsx")
