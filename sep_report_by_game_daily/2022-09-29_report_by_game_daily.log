@@ -1,0 +1,7 @@
+INFO:mysql.connector.authentication:package: mysql.connector.plugins
+INFO:mysql.connector.authentication:plugin_name: caching_sha2_password
+INFO:mysql.connector.authentication:AUTHENTICATION_PLUGIN_CLASS: MySQLCachingSHA2PasswordAuthPlugin
+INFO:__main__:2022-11-07 14:56:48.628006+08:00 : connecting the cursor
+INFO:__main__:2022-11-07 14:56:48.628006+08:00 : executing query
+INFO:__main__:2022-11-07 14:56:48.628939+08:00 : Start to fetch all the gid set!
+INFO:__main__:2022-11-07 14:56:48.666524+08:00 : prepare to fetch date

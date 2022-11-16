@@ -1,0 +1,10 @@
+INFO:mysql.connector.authentication:package: mysql.connector.plugins
+INFO:mysql.connector.authentication:plugin_name: caching_sha2_password
+INFO:mysql.connector.authentication:AUTHENTICATION_PLUGIN_CLASS: MySQLCachingSHA2PasswordAuthPlugin
+INFO:__main__:2022-11-15 10:13:50.651392+08:00 : connecting the cursor
+INFO:__main__:2022-11-15 10:13:50.651392+08:00 : executing query
+INFO:__main__:2022-11-15 10:13:50.651392+08:00 : Start to fetch all the gid set!
+INFO:__main__:2022-11-15 10:14:04.227997+08:00 : prepare to fetch date
+INFO:__main__:2022-11-15 10:14:04.228984+08:00 : Start to fetch all the gid set!
+INFO:__main__:2022-11-15 10:14:04.237793+08:00 : prepare to fetch date
+INFO:__main__:2022-11-15 10:14:04.237793+08:00 : getting user_game

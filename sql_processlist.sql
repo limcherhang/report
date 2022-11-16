@@ -1,2 +1,2 @@
 SHOW processlist;
-kill 831450;
+kill 1332048;

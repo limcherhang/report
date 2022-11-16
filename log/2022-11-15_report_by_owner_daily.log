@@ -1,0 +1,28 @@
+INFO:mysql.connector.authentication:package: mysql.connector.plugins
+INFO:mysql.connector.authentication:plugin_name: caching_sha2_password
+INFO:mysql.connector.authentication:AUTHENTICATION_PLUGIN_CLASS: MySQLCachingSHA2PasswordAuthPlugin
+INFO:__main__:2022-11-16 17:03:53.887862+08:00 : connecting the cursor
+INFO:__main__:2022-11-16 17:03:53.887862+08:00 : executing query
+INFO:__main__:2022-11-16 17:03:53.899078+08:00 : Start to fetch all the owner set!
+INFO:__main__:2022-11-16 17:03:53.919600+08:00 : prepare to fetch date
+INFO:__main__:2022-11-16 17:03:53.930308+08:00 : getting user owner
+INFO:__main__:2022-11-16 17:04:07.992727+08:00 : getting user owner done, time used : 14.062419414520264 sec
+INFO:__main__:2022-11-16 17:04:07.992727+08:00 : getting players yesterday
+INFO:__main__:2022-11-16 17:04:13.441506+08:00 : getting players yesterday done, time used : 5.448778867721558
+INFO:__main__:2022-11-16 17:04:13.441506+08:00 : getting h5 round
+INFO:__main__:2022-11-16 17:04:13.570912+08:00 : getting h5 round done, time.used : 0.12940621376037598 sec
+INFO:__main__:2022-11-16 17:04:13.571891+08:00 : getting user total play time
+INFO:__main__:2022-11-16 17:04:41.508242+08:00 : getting user total play time done , time used : 27.9373300075531 sec
+INFO:__main__:2022-11-16 17:04:41.508242+08:00 : getting add & lose player
+INFO:__main__:2022-11-16 17:05:49.922959+08:00 : getting add & lose player done, time used : 68.41471648216248 sec
+INFO:__main__:2022-11-16 17:05:49.922959+08:00 : getting players last day
+INFO:__main__:2022-11-16 17:05:55.305297+08:00 : getting players last day done, time used : 5.382337808609009 sec
+INFO:__main__:2022-11-16 17:05:57.697232+08:00 : ALL done
+INFO:__main__:2022-11-16 17:05:57.760212+08:00 : CNY done
+INFO:__main__:2022-11-16 17:05:57.820292+08:00 : KRW done
+INFO:__main__:2022-11-16 17:05:57.870547+08:00 : THB done
+INFO:__main__:2022-11-16 17:05:57.917956+08:00 : VND done
+INFO:__main__:2022-11-16 17:05:57.917956+08:00 : time used for query 2.0664608001708986 minutes
+INFO:__main__:2022-11-16 17:05:57.930623+08:00 : query done, time : 2.068753711382548 minutes
+INFO:__main__:2022-11-16 17:05:57.930623+08:00 : prepare to import into excel
+INFO:__main__:2022-11-16 17:05:58.379917+08:00 : 2022-11-15_report_by_owner_daily.xlsx import complete, time : 0.4492936134338379 sec

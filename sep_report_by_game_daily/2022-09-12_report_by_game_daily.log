@@ -1,0 +1,16 @@
+INFO:mysql.connector.authentication:package: mysql.connector.plugins
+INFO:mysql.connector.authentication:plugin_name: caching_sha2_password
+INFO:mysql.connector.authentication:AUTHENTICATION_PLUGIN_CLASS: MySQLCachingSHA2PasswordAuthPlugin
+INFO:__main__:2022-11-07 00:14:24.918583+08:00 : connecting the cursor
+INFO:__main__:2022-11-07 00:14:24.918583+08:00 : executing query
+INFO:__main__:2022-11-07 00:14:24.918583+08:00 : Start to fetch all the gid set!
+INFO:__main__:2022-11-07 00:14:24.936828+08:00 : prepare to fetch date
+INFO:__main__:ALL done
+INFO:__main__:CNY done
+INFO:__main__:IDR done
+INFO:__main__:KRW done
+INFO:__main__:THB done
+INFO:__main__:VND done
+INFO:__main__:2022-11-07 00:49:48.593508+08:00 : query done, time : 35.394277997811635 minutes
+INFO:__main__:2022-11-07 00:49:48.593508+08:00 : prepare to import into excel
+INFO:__main__:2022-11-07 00:49:49.552859+08:00 : 2022-09-12_report_by_game_daily.xlsx import complete, time : 0.9593501091003418 sec

@@ -1,0 +1,27 @@
+INFO:mysql.connector.authentication:package: mysql.connector.plugins
+INFO:mysql.connector.authentication:plugin_name: caching_sha2_password
+INFO:mysql.connector.authentication:AUTHENTICATION_PLUGIN_CLASS: MySQLCachingSHA2PasswordAuthPlugin
+INFO:__main__:2022-11-16 13:35:12.158331+08:00 : connecting the cursor
+INFO:__main__:2022-11-16 13:35:12.159348+08:00 : executing query
+INFO:__main__:2022-11-16 13:35:12.160298+08:00 : Start to fetch all the gid set!
+INFO:__main__:2022-11-16 13:35:12.169112+08:00 : prepare to fetch date
+INFO:__main__:2022-11-16 13:35:12.170088+08:00 : getting user_game
+INFO:__main__:2022-11-16 13:36:02.164803+08:00 : getting user_game done, time used : 49.99376916885376 sec
+INFO:__main__:2022-11-16 13:36:02.164803+08:00 : getting player yesterday
+INFO:__main__:2022-11-16 13:36:02.367869+08:00 : getting player yesterday done, time used : 0.2030658721923828 sec
+INFO:__main__:2022-11-16 13:36:02.367869+08:00 : getting h5 round
+INFO:__main__:2022-11-16 13:36:13.471992+08:00 : getting h5 round done, time.used : 11.104122877120972 sec
+INFO:__main__:2022-11-16 13:36:13.487672+08:00 : getting user total play time
+INFO:__main__:2022-11-16 13:37:18.261010+08:00 : getting user total play time done , time used : 64.78901767730713 sec
+INFO:__main__:2022-11-16 13:37:18.261010+08:00 : getting add & lose player
+INFO:__main__:2022-11-16 13:37:53.043071+08:00 : getting add & lose player done, time used : 34.78206157684326 sec
+INFO:__main__:2022-11-16 13:38:01.495513+08:00 : time used for query 2.822090419133504 minutes
+INFO:__main__:2022-11-16 13:38:01.527708+08:00 : ALL done
+INFO:__main__:2022-11-16 13:38:01.559500+08:00 : THB done
+INFO:__main__:2022-11-16 13:38:01.591217+08:00 : IDR done
+INFO:__main__:2022-11-16 13:38:01.627321+08:00 : CNY done
+INFO:__main__:2022-11-16 13:38:01.654174+08:00 : VND done
+INFO:__main__:2022-11-16 13:38:01.669835+08:00 : KRW done
+INFO:__main__:2022-11-16 13:38:01.685903+08:00 : query done, time : 2.8267282207806903 minutes
+INFO:__main__:2022-11-16 13:38:01.685903+08:00 : prepare to import into excel
+INFO:__main__:2022-11-16 13:38:02.620922+08:00 : 2022-11-15_report_by_game_daily.xlsx import complete, time : 0.9350190162658691 sec

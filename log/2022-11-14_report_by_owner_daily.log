@@ -1,0 +1,10 @@
+INFO:mysql.connector.authentication:package: mysql.connector.plugins
+INFO:mysql.connector.authentication:plugin_name: caching_sha2_password
+INFO:mysql.connector.authentication:AUTHENTICATION_PLUGIN_CLASS: MySQLCachingSHA2PasswordAuthPlugin
+INFO:__main__:2022-11-15 15:21:25.030781+08:00 : connecting the cursor
+INFO:__main__:2022-11-15 15:21:25.031767+08:00 : executing query
+INFO:__main__:2022-11-15 15:21:25.033711+08:00 : Start to fetch all the owner set!
+INFO:__main__:2022-11-15 15:21:25.223195+08:00 : prepare to fetch date
+INFO:__main__:2022-11-15 15:21:25.223195+08:00 : getting user owner
+INFO:__main__:2022-11-15 15:21:35.024881+08:00 : getting user owner done, time used : 9.800697565078735 sec
+INFO:__main__:2022-11-15 15:21:35.024881+08:00 : time used for query 0.16336142619450886 minutes

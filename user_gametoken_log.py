@@ -22,33 +22,31 @@ if len(rep_date) != 19:
 ###################
 # connect mongodb #
 ###################
-"""
-MongoClient(
-            host=mongo_cfg["host"],
-            port=mongo_cfg["port"],
-            username=mongo_cfg["user"],
-            password=mongo_cfg["password"],
-            authSource=mongo_cfg["authentication_source"],
+myclient = pymongo.MongoClient(
+            host=["10.100.8.87","10.100.8.88","10.100.8.89"],
+            port=27017,
+            username="DAxHermes_aries",
+            password="AK4EyH7Nx96_GDwz",
+            authSource="admin",
             connect=True,
             serverSelectionTimeoutMS=3000,
-            replicaSet=mongo_cfg["replicaset"],
+            replicaSet="pro_da_ana_rs",
             read_preference=pymongo.read_preferences.ReadPreference.SECONDARY_PREFERRED,
             w=1,
         )
-"""
 
-username = "DAxHermes_aries"
-passw = "AK4EyH7Nx96_GDwz"
-host = ["10.100.8.87","10.100.8.88","10.100.8.89"]
-port = "27017"
-replicaset = "pro_da_ana_rs"
-authentication_source = "admin"
+# username = "DAxHermes_aries"
+# passw = "AK4EyH7Nx96_GDwz"
+# host = ["10.100.8.87","10.100.8.88","10.100.8.89"]
+# port = "27017"
+# replicaset = "pro_da_ana_rs"
+# authentication_source = "admin"
 
-uri = f"mongodb://{username}:{passw}@"
-uri += f":{port},".join(host)
-uri += f"/?replicaSet={replicaset}&authSource={authentication_source}"
-# print(uri)
-myclient = pymongo.MongoClient(uri) # port is default 27017
+# uri = f"mongodb://{username}:{passw}@"
+# uri += f":{port},".join(host)
+# uri += f"/?replicaSet={replicaset}&authSource={authentication_source}"
+# # print(uri)
+# myclient = pymongo.MongoClient(uri) # port is default 27017
 
 # call database 'order'
 db = myclient.order

@@ -1,0 +1,28 @@
+INFO:mysql.connector.authentication:package: mysql.connector.plugins
+INFO:mysql.connector.authentication:plugin_name: caching_sha2_password
+INFO:mysql.connector.authentication:AUTHENTICATION_PLUGIN_CLASS: MySQLCachingSHA2PasswordAuthPlugin
+INFO:__main__:2022-11-14 11:57:51.438595+08:00 : connecting the cursor
+INFO:__main__:2022-11-14 11:57:51.438595+08:00 : executing query
+INFO:__main__:2022-11-14 11:57:51.438595+08:00 : Start to fetch all the gid set!
+INFO:__main__:2022-11-14 11:57:53.514656+08:00 : prepare to fetch date
+INFO:__main__:2022-11-14 11:57:53.514656+08:00 : Start to fetch all the gid set!
+INFO:__main__:2022-11-14 11:57:53.530720+08:00 : prepare to fetch date
+INFO:__main__:2022-11-14 11:57:53.530720+08:00 : getting user_game
+INFO:__main__:2022-11-14 11:58:20.600470+08:00 : getting user_game done, time used : 27.069750785827637 sec
+INFO:__main__:2022-11-14 11:58:20.600470+08:00 : getting players yesterday
+INFO:__main__:2022-11-14 11:58:20.711805+08:00 : getting players yesterday, time used : 0.11133432388305664 sec
+INFO:__main__:2022-11-14 11:58:20.711805+08:00 : getting h5 round
+INFO:__main__:2022-11-14 11:58:29.043699+08:00 : getting h5 round done, time used : 8.331894636154175 sec
+INFO:__main__:2022-11-14 11:58:29.043699+08:00 : getting user total play time
+INFO:__main__:2022-11-14 11:58:54.961614+08:00 : getting user total play time done, time used : 25.917914390563965 sec
+INFO:__main__:2022-11-14 11:58:55.127603+08:00 : getting ans report_by_game_daily 2022-11-13 00:00:00, time used : 0.16598939895629883 sec
+INFO:__main__:2022-11-14 11:59:16.044952+08:00 : time used for query 1.3752372066179912 minutes
+INFO:__main__:2022-11-14 11:59:16.192378+08:00 : ALL done
+INFO:__main__:2022-11-14 11:59:16.336454+08:00 : CNY done
+INFO:__main__:2022-11-14 11:59:16.464351+08:00 : KRW done
+INFO:__main__:2022-11-14 11:59:16.590310+08:00 : THB done
+INFO:__main__:2022-11-14 11:59:16.732927+08:00 : VND done
+INFO:root:2022-11-14 11:59:16.732927+08:00 : query time used(not included ans) : 0.0
+INFO:__main__:2022-11-14 11:59:16.732927+08:00 : query done, time : 1.3867034633954367 minutes
+INFO:__main__:2022-11-14 11:59:16.732927+08:00 : prepare to import into excel
+INFO:__main__:2022-11-14 11:59:18.363128+08:00 : 2022-11-13_report_by_game_daily_vs_ans.xlsx import complete, time : 1.6302006244659424 sec
